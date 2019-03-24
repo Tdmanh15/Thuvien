@@ -77,3 +77,102 @@ PTR_DocGia tree=NULL;
 
 
 
+
+
+
+void Menu();
+void NhapTheDocGia(int &NhapMaThe);
+void ThemTheDocGia();
+void XoaTheDocGia();
+void SuaTheDocGia();
+string GioiTinh();
+int TrangThaiThe();
+
+void InDanhSachDocGia();
+
+void NhapThongTinDauSach();
+
+void InThongTinDauSach();
+void SearchSach();
+void InMuonSach();
+void InTraSach();
+void LietKe();
+void InDanhSachDocGiaMuonQuaHan();
+void Top10SachMuonNhieuNhat();
+
+
+
+
+int main()
+{
+	
+	return 0;
+}
+void Menu()
+{
+	
+}
+void NhapTheDocGia(int &NhapMaThe)
+{
+	
+}
+void ThemTheDocGia()
+{
+	
+}
+void XoaTheDocGia()
+{
+	
+}
+void SuaTheDocGia()
+{
+	
+}
+string GioiTinh()
+{
+	
+}
+int TrangThaiThe()
+{
+	
+}
+
+void InDanhSachDocGia()
+{
+	
+}
+
+void NhapThongTinDauSach()
+{
+	
+}
+
+void InThongTinDauSach()
+{
+	
+}
+void SearchSach()
+{
+	
+}
+void InMuonSach()
+{
+	
+}
+void InTraSach()
+{
+	
+}
+void LietKe()
+{
+	
+}
+void InDanhSachDocGiaMuonQuaHan()
+{
+	
+}
+void Top10SachMuonNhieuNhat()
+{
+	
+}
+
