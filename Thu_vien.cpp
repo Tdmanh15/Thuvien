@@ -2,6 +2,12 @@
 #include<fstream>
 #include<ctime>
 #include<string.h>
+#include<conio.h>
+#include<stdio.h>
+#include<iomanip>
+#include<windows.h>
+#include<graphics.h>
+#include <sstream>
 #define MAX 100
 
 using namespace std;
@@ -77,9 +83,8 @@ struct NodeDocGia
 	DocGia docgia;
 	struct NodeDocGia *right;
 	struct NodeDocGia *left;
-};
-struct NodeDocGia *PTR_DocGia;
-//PTR_DocGia tree=NULL;
+};typedef NodeDocGia *NODEPTR;
+//NODEPTR tree=NULL;
 
 
 
@@ -88,7 +93,9 @@ struct NodeDocGia *PTR_DocGia;
 
 void Menu();
 void NhapTheDocGia(int &NhapMaThe);
-string GT();
+void Initialize(NOTEPTR &root);
+void Insert_Node(NOTEPTR &p,int x, DocGia a);
+
 void ThemTheDocGia();
 void XoaTheDocGia();
 void SuaTheDocGia();
@@ -208,6 +215,39 @@ void NhapTheDocGia(int &NhapMaThe)
 {
 	
 }
+//Bat dau tao cay nhi phan
+/*struct NodeDocGia
+{
+	int key;
+	DocGia docgia;
+	struct NodeDocGia *right;
+	struct NodeDocGia *left;
+};
+struct NodeDocGia *NODEPTR;
+NODEPTR tree=NULL;
+*/
+
+
+
+void Initialize(NOTEPTR &root)//Khoi tao cay
+{
+	root==NULL;
+}
+void Insert_Node(NOTEPTR &p,int x, DocGia a)//them khoa x vao cay voi goc la root
+{
+	if(p==NULL)//p hien la nut la
+	{
+		p=new NodeDocGia;
+		p->key=x;
+		p->docgia=a;
+		p->left=NULL;
+		p->right=NULL;
+	}
+	else if(x<p->key)
+	Insert_Node(p->left,x,a);
+	else if(x>p->key)
+	Insert_Node(p->right,x,a);
+}
 
 void ThemTheDocGia()
 {
@@ -293,6 +333,8 @@ void ThemTheDocGia()
 	dg.dsMuonTra = NULL;
 	dg.TrangThaiThe =1;
 	dg.TrangThaiMuon=0;
+	Insert_Node(root,dg.MaThe,dg);
+	cout<<"Da Them Doc Gia Thanh Cong."<<endl;
 	}
 }
 void XoaTheDocGia()
