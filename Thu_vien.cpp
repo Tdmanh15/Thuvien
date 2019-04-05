@@ -84,7 +84,6 @@ struct NodeDocGia
 	struct NodeDocGia *right;
 	struct NodeDocGia *left;
 };typedef NodeDocGia *NODEPTR;
-//NODEPTR tree=NULL;
 
 
 
@@ -93,10 +92,10 @@ struct NodeDocGia
 
 void Menu();
 void NhapTheDocGia(int &NhapMaThe);
-void Initialize(NOTEPTR &root);
-void Insert_Node(NOTEPTR &p,int x, DocGia a);
+void Initialize(NODEPTR &root);
+void Insert_Node(NODEPTR &p,int x, DocGia a);
 
-void ThemTheDocGia();
+void ThemTheDocGia(NODEPTR &root);
 void XoaTheDocGia();
 void SuaTheDocGia();
 int TrangThaiThe();
@@ -112,25 +111,103 @@ void InTraSach();
 void LietKe();
 void InDanhSachDocGiaMuonQuaHan();
 void Top10SachMuonNhieuNhat();
-
+void LuuCSDL(NODEPTR &root , ofstream &FileDocGia);
+void GiaoDien(int luachon);
 
 
 
 int main()
 {
-	ThemTheDocGia();
+	int luachon=1;
+	NODEPTR root;
+	ofstream FileDocGia;
+	ThemTheDocGia(root);
+//	LuuCSDL(root, FileDocGia);
+//	GiaoDien(luachon);
 	return 0;
 }
-void Menu()
+
+// xay dung ham do hoa.
+void gotoxy(int x, int y)
 {
-	cout<<"NHAP THE DOC GIA"<<endl;
-	cout<<"IN DANH SACH DOC GIA"<<endl;
-	cout<<"NHAP THONG TIN DAU SACH"<<endl;
-	cout<<"IN DANH SACH DAU SACH"<<endl;
-	cout<<"TIM SACH"<<endl;
-	cout<<"MUON SACH"<<endl;
-	cout<<"TRA SACH"<<endl;
+    static HANDLE  h = NULL;
+    if(!h)
+        h = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD c = {x,y};
+    SetConsoleCursorPosition(h,c);
 }
+int wherex( void )
+{
+    HANDLE hConsoleOutput;
+    hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
+    GetConsoleScreenBufferInfo(hConsoleOutput, &screen_buffer_info);
+    return screen_buffer_info.dwCursorPosition.X;
+}
+int wherey( void )
+{
+    HANDLE hConsoleOutput;
+    hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
+    GetConsoleScreenBufferInfo(hConsoleOutput, &screen_buffer_info);
+    return screen_buffer_info.dwCursorPosition.Y;
+}
+void SetColor(WORD color)
+{
+    HANDLE hConsoleOutput;
+    hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
+    GetConsoleScreenBufferInfo(hConsoleOutput, &screen_buffer_info);
+    WORD wAttributes = screen_buffer_info.wAttributes;
+    color &= 0x000f;
+    wAttributes &= 0xfff0;
+    wAttributes |= color;
+    SetConsoleTextAttribute(hConsoleOutput, wAttributes);
+}
+void SetBGColor(WORD color)
+{
+    HANDLE hConsoleOutput;
+    hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    CONSOLE_SCREEN_BUFFER_INFO screen_buffer_info;
+    GetConsoleScreenBufferInfo(hConsoleOutput, &screen_buffer_info);
+
+    WORD wAttributes = screen_buffer_info.wAttributes;
+    color &= 0x000f;
+    color <<= 4;
+    wAttributes &= 0xff0f;
+    wAttributes |= color;
+    SetConsoleTextAttribute(hConsoleOutput, wAttributes);
+}
+void hidecursor()
+{
+	CONSOLE_CURSOR_INFO CursorInfo;
+	CursorInfo.dwSize = 30;
+	CursorInfo.bVisible = false;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);
+}
+void unhidecursor(){
+	CONSOLE_CURSOR_INFO CursorInfo;
+	CursorInfo.dwSize = 30;
+	CursorInfo.bVisible = true;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);
+}
+void Inxy(int x, int y, string z, bool lightbar){
+	gotoxy(x,y);
+	if(lightbar){
+		SetColor(0);
+		SetBGColor(15);
+	}
+	cout<<z<<string(48-z.length(),' ');
+	SetColor(15);
+	SetBGColor(0);	
+}
+void Inxy(int x, int y, string z){
+	gotoxy(x,y);
+	cout<<z;	
+}
+//Ket thuc xay dung ham do hoa.
+
 bool SoSanhChuoi(string s1, string s2)
 	{
 		for(int i = 0; i < s1.length(); i++)//string.length() => Tra ve so ki tu chuoi so
@@ -216,24 +293,12 @@ void NhapTheDocGia(int &NhapMaThe)
 	
 }
 //Bat dau tao cay nhi phan
-/*struct NodeDocGia
-{
-	int key;
-	DocGia docgia;
-	struct NodeDocGia *right;
-	struct NodeDocGia *left;
-};
-struct NodeDocGia *NODEPTR;
-NODEPTR tree=NULL;
-*/
 
-
-
-void Initialize(NOTEPTR &root)//Khoi tao cay
+void Initialize(NODEPTR &root)//Khoi tao cay
 {
 	root==NULL;
 }
-void Insert_Node(NOTEPTR &p,int x, DocGia a)//them khoa x vao cay voi goc la root
+void Insert_Node(NODEPTR &p,int x, DocGia a)//them khoa x vao cay voi goc la root
 {
 	if(p==NULL)//p hien la nut la
 	{
@@ -248,8 +313,8 @@ void Insert_Node(NOTEPTR &p,int x, DocGia a)//them khoa x vao cay voi goc la roo
 	else if(x>p->key)
 	Insert_Node(p->right,x,a);
 }
-
-void ThemTheDocGia()
+//Ket thuc
+void ThemTheDocGia(NODEPTR &root)
 {
 	DocGia dg;
 	int count =0;
@@ -265,19 +330,18 @@ void ThemTheDocGia()
 		cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
 		do
 		{
-		cout<<"Moi Nhap Ho Doc Gia : ";
-		fflush(stdin); //dùng de xoá bo nho dêm
-		getline(cin,ho);
-		if(ho == "")
-		{
-			ktra+=1;
-			cout<<"Nhap Ho Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
-			cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
 			cout<<"Moi Nhap Ho Doc Gia : ";
 			fflush(stdin); //dùng de xoá bo nho dêm
 			getline(cin,ho);
-	
-		}
+		if(ho == "")
+			{
+				ktra+=1;
+				cout<<"Nhap Ho Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
+				cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
+				cout<<"Moi Nhap Ho Doc Gia : ";
+				fflush(stdin); //dùng de xoá bo nho dêm
+				getline(cin,ho);
+			}
 		else
 		break;
 	}while(ktra==0);
@@ -285,50 +349,47 @@ void ThemTheDocGia()
 	return;
 	else if(SoSanhChuoi(ho,"thoat")==false)
 	dg.Ho=ChuanHoaChuoi(ho);
-	
 	do
 		{
 		cout<<"Moi Nhap Ten Doc Gia : ";
 		fflush(stdin); //dùng de xoá bo nho dêm
 		getline(cin,ten);
 		if(ten == "")
-		{
-			ktra+=1;
-			cout<<"Nhap Ten Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
-			cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
-			cout<<"Ho Doc Gia : "<<ho<<endl;
-			cout<<"Moi Nhap Ten Doc Gia : ";
-			fflush(stdin); //dùng de xoá bo nho dêm
-			getline(cin,ten);
-		}
-		else
-		break;
-	}while(ktra==0);
-	if(SoSanhChuoi(ten,"thoat")==true)
-	return;
-	else if(SoSanhChuoi(ten,"thoat")==false)	
-	dg.Ten=ChuanHoaChuoi(ten);
-	
-	do
-		{
-		cout<<"Moi Nhap Gio Tinh Doc Gia (Nam/Nu) : ";
-		fflush(stdin); //dùng de xoá bo nho dêm
-		getline(cin,gt);
-		if(gt=="")
-		{
-			if(SoSanhChuoi(gt,"Nam")==false||SoSanhChuoi(gt,"Nu")==false)
 			{
-			
-			ktra+=1;
-			cout<<"Nhap Gioi Tinh Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
-			cout<<"Moi Nhap Gioi Tinh Doc Gia : ";
+				ktra+=1;
+				cout<<"Nhap Ten Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
+				cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
+				cout<<"Ho Doc Gia : "<<ho<<endl;
+				cout<<"Moi Nhap Ten Doc Gia : ";
+				fflush(stdin); //dùng de xoá bo nho dêm
+				getline(cin,ten);
+			}
+			else
+			break;
+		}while(ktra==0);
+		if(SoSanhChuoi(ten,"thoat")==true)
+		return;
+		else if(SoSanhChuoi(ten,"thoat")==false)	
+		dg.Ten=ChuanHoaChuoi(ten);
+		do
+			{
+			cout<<"Moi Nhap Gio Tinh Doc Gia (Nam/Nu) : ";
 			fflush(stdin); //dùng de xoá bo nho dêm
 			getline(cin,gt);
-		}
-		}
-		else
-		break;
-	}while(ktra==0);
+			if(gt=="")
+				{
+					if(SoSanhChuoi(gt,"Nam")==false||SoSanhChuoi(gt,"Nu")==false)
+						{
+							ktra+=1;
+							cout<<"Nhap Gioi Tinh Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
+							cout<<"Moi Nhap Gioi Tinh Doc Gia : ";
+							fflush(stdin); //dùng de xoá bo nho dêm
+							getline(cin,gt);
+						}
+				}
+					else
+					break;
+			}while(ktra==0);
 	dg.GioiTinh=ChuanHoaChuoi(gt);
 	dg.dsMuonTra = NULL;
 	dg.TrangThaiThe =1;
@@ -388,5 +449,75 @@ void InDanhSachDocGiaMuonQuaHan()
 void Top10SachMuonNhieuNhat()
 {
 	
+}
+void LuuCSDL(NODEPTR &root , ofstream &FileDocGia)
+{
+		FileDocGia.open("FileDocGia.txt");
+	if(!FileDocGia)
+	{
+		cout<<"Khong the mo file"<<endl;
+	}
+	//Luu danh sach doc gia
+		const int STACKSIZE = MAX;
+		NODEPTR Stack[STACKSIZE];
+		int sp = -1;
+		NODEPTR p = root;
+		
+		while(p!=NULL)
+		{
+			FileDocGia<<p->docgia.MaThe<<endl;
+			FileDocGia<<p->docgia.Ho<<endl;
+			FileDocGia<<p->docgia.Ten<<endl;
+			
+			
+			if(p->right!=NULL)
+				Stack[++sp]=p->right;
+			if(p->left!=NULL)
+				p=p->left;
+			//else if(sp == -1)break;
+		//	else p=Stack[sp--];
+	}
+		cout<<"Da luu thanh cong"<<endl;
+		FileDocGia.close();
+}
+void Menu(int i, bool lightbar)
+{
+	hidecursor();	
+	switch (i)
+	{
+		case 1:
+			Inxy(28,2,"1. NHAP THE DOC GIA",lightbar);
+			break;
+		case 2:
+			Inxy(28,3,"2. IN DANH SACH DOC GIA",lightbar);
+			break;
+		case 3:
+			Inxy(28,4,"3. NHAP THONG TIN DAU SACH",lightbar);
+			break;
+		case 4:
+			Inxy(28,5,"4. IN DANH SACH DAU SACH",lightbar);
+			break;
+		case 5:
+			Inxy(28,6,"5. TIM SACH",lightbar);
+			break;
+		case 6:
+			Inxy(28,8,"6. MUON SACH",lightbar);
+			break;
+		case 7:
+			Inxy(28,9,"7. TRA SACH",lightbar);
+			break;
+		case 8:
+			Inxy(20,10," Thoat",lightbar);
+	}
+}
+void GiaoDien(int luachon)
+{
+	system("cls");
+	Inxy(32,0,"QUAN LY THU VIEN");
+	for(int i=1;i<=8;i++)
+	{
+		Menu(i,false);
+	}
+		Menu(luachon,true);
 }
 
