@@ -6,15 +6,13 @@
 #include<stdio.h>
 #include<iomanip>
 #include<windows.h>
-#include<graphics.h>
 #include <sstream>
-#define MAX 100
+#define MAX 500
 
 using namespace std;
 
 struct Book
 {
-	string Tensach;
 	string Masach;
 	int Vitri;
 	int Trangthai;
@@ -37,49 +35,44 @@ struct DauSach
 	string Theloai;
 	PTR_Sach FirstSach;	
 };
-
-
-
-
+typedef struct list
+{
+	int n=0; //Khai bao so nut
+	int nodes[MAX];
+}; 
+list ds;
 struct Date
 {
 	int day;
 	int month;
 	int year;
 };
-
-
 struct MuonTra
 {
-	string TenSachMT;
 	string MaSachMT;
 	Date NgayMuon;
 	Date NgayTra;
 	int TrangThaiM;
 };
-
 struct NodeMuonTra
 {
 	MuonTra mt;
-	NodeMuonTra *next;
+	NodeMuonTra *next, *prev;
 };
 typedef NodeMuonTra *PTR_MuonTra;
-
 struct DocGia
 {
-	int MaThe;
+	int MaThe;    //key
 	string Ho;
 	string Ten;
-	int TrangThaiMuon=0;
+	int SoSachMuon=0;
 	string GioiTinh;
 	int TrangThaiThe;
 	PTR_MuonTra dsMuonTra;//Tro den danh sach cac cuon sach da va dang muon.
 	 
 };
-
 struct NodeDocGia
 {
-	int key;
 	DocGia docgia;
 	struct NodeDocGia *right;
 	struct NodeDocGia *left;
@@ -94,12 +87,12 @@ void Menu();
 void NhapTheDocGia(int &NhapMaThe);
 void Initialize(NODEPTR &root);
 void Insert_Node(NODEPTR &p,int x, DocGia a);
-
-void ThemTheDocGia(NODEPTR &root);
+void LNR(NODEPTR &root);
+void ThemTheDocGia(NODEPTR &root, int &n);
 void XoaTheDocGia();
 void SuaTheDocGia();
 int TrangThaiThe();
-
+bool ktra_So(int &num);
 void InDanhSachDocGia();
 
 void NhapThongTinDauSach();
@@ -111,18 +104,18 @@ void InTraSach();
 void LietKe();
 void InDanhSachDocGiaMuonQuaHan();
 void Top10SachMuonNhieuNhat();
-void LuuCSDL(NODEPTR &root , ofstream &FileDocGia);
+void LuuCSDL(NODEPTR &root , fstream &FileDocGia);
 void GiaoDien(int luachon);
 
 
 
 int main()
 {
-	int luachon=1;
+	int luachon=1,n;
 	NODEPTR root;
-	ofstream FileDocGia;
-	ThemTheDocGia(root);
-//	LuuCSDL(root, FileDocGia);
+	fstream FileDocGia;
+	ThemTheDocGia(root,n);
+	LuuCSDL(root, FileDocGia);
 //	GiaoDien(luachon);
 	return 0;
 }
@@ -207,7 +200,18 @@ void Inxy(int x, int y, string z){
 	cout<<z;	
 }
 //Ket thuc xay dung ham do hoa.
-
+bool Check(char *ch)// ktra so hay chu
+{
+	for(int i=0;i<strlen(ch);i++)
+	{
+		if(ch[i]<48||ch[i]>57)
+		{
+			cout<<"Nhap sai.Moi Nhap lai."<<endl;
+			return false;
+		}
+	}
+	return true;
+}
 bool SoSanhChuoi(string s1, string s2)
 	{
 		for(int i = 0; i < s1.length(); i++)//string.length() => Tra ve so ki tu chuoi so
@@ -303,30 +307,67 @@ void Insert_Node(NODEPTR &p,int x, DocGia a)//them khoa x vao cay voi goc la roo
 	if(p==NULL)//p hien la nut la
 	{
 		p=new NodeDocGia;
-		p->key=x;
+		p->docgia.MaThe=x;
 		p->docgia=a;
 		p->left=NULL;
 		p->right=NULL;
 	}
-	else if(x<p->key)
+	else if(x<p->docgia.MaThe)
 	Insert_Node(p->left,x,a);
-	else if(x>p->key)
+	else if(x>p->docgia.MaThe)
 	Insert_Node(p->right,x,a);
 }
+void LNR(NODEPTR &root)
+{
+	int const STACKSIZE =500;
+	NODEPTR Stack[STACKSIZE];
+	NODEPTR p=root;
+	int sp=-1 ;// Khoi tao stack rong
+	do
+	{
+		while(p!=NULL)
+		{
+			Stack[++sp]=p;
+			p=p->left;
+		}
+		if(sp!=-1)
+		{
+			p=Stack[sp--];
+			if(p->docgia.TrangThaiThe == 0)
+				cout<<"|Da huy kich hoat"<<endl;
+			else if(p->docgia.TrangThaiThe ==1)
+				cout<<"|Da kich hoat"<<endl;
+			else cout<<"|Khong xac dinh"<<endl;
+			p=p->right;
+		}
+		else break;
+	}while(1);
+}
+
 //Ket thuc
-void ThemTheDocGia(NODEPTR &root)
+void ThemTheDocGia(NODEPTR &root, int &n)
 {
 	DocGia dg;
 	int count =0;
 	string ho,ten,gt;
-	int num; //So doc gia ban muon nhap
-	cout<<"Ban muon them bao nhieu doc gia :";
-	cin>>num;
+	 //So doc gia ban muon nhap
+	char temp[MAX];
+	int num=0;
+	int ktra;
+	string s1="Nam";
+	string s2="Nu";
 	for(int i=0;i<num;i++)
+	{
+	do
+	{
+		cout<<"Ban muon them bao nhieu doc gia : ";
+		cin>>temp;
+	}while(!Check(temp));
+	num=atoi(temp);
+	for(int i=0;i<n;i++)
 	{
 		count+=1;
 		dg.MaThe=count;
-		int ktra=0;
 		cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
 		do
 		{
@@ -335,16 +376,12 @@ void ThemTheDocGia(NODEPTR &root)
 			getline(cin,ho);
 		if(ho == "")
 			{
-				ktra+=1;
-				cout<<"Nhap Ho Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
+				cout<<"Nhap Ho Khong Hop Le . Moi Nhap Lai.\n";
 				cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
-				cout<<"Moi Nhap Ho Doc Gia : ";
-				fflush(stdin); //dùng de xoá bo nho dêm
-				getline(cin,ho);
 			}
 		else
 		break;
-	}while(ktra==0);
+	}while(ho=="");
 	if(SoSanhChuoi(ho,"thoat")==true)
 	return;
 	else if(SoSanhChuoi(ho,"thoat")==false)
@@ -356,47 +393,32 @@ void ThemTheDocGia(NODEPTR &root)
 		getline(cin,ten);
 		if(ten == "")
 			{
-				ktra+=1;
 				cout<<"Nhap Ten Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
 				cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
 				cout<<"Ho Doc Gia : "<<ho<<endl;
-				cout<<"Moi Nhap Ten Doc Gia : ";
-				fflush(stdin); //dùng de xoá bo nho dêm
-				getline(cin,ten);
 			}
 			else
 			break;
-		}while(ktra==0);
+		}while(ten=="");
 		if(SoSanhChuoi(ten,"thoat")==true)
 		return;
 		else if(SoSanhChuoi(ten,"thoat")==false)	
 		dg.Ten=ChuanHoaChuoi(ten);
-		do
-			{
-			cout<<"Moi Nhap Gio Tinh Doc Gia (Nam/Nu) : ";
-			fflush(stdin); //dùng de xoá bo nho dêm
-			getline(cin,gt);
-			if(gt=="")
-				{
-					if(SoSanhChuoi(gt,"Nam")==false||SoSanhChuoi(gt,"Nu")==false)
-						{
-							ktra+=1;
-							cout<<"Nhap Gioi Tinh Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
-							cout<<"Moi Nhap Gioi Tinh Doc Gia : ";
-							fflush(stdin); //dùng de xoá bo nho dêm
-							getline(cin,gt);
-						}
-				}
-					else
-					break;
-			}while(ktra==0);
+		cout<<"Moi Nhap Gioi Tinh Doc Gia : ";
+		fflush(stdin); //dùng de xoá bo nho dêm
+		getline(cin,ten);
+		if(SoSanhChuoi(gt,"thoat")==true)
+		return;
+		else if(SoSanhChuoi(gt,"thoat")==false)	
 	dg.GioiTinh=ChuanHoaChuoi(gt);
 	dg.dsMuonTra = NULL;
 	dg.TrangThaiThe =1;
-	dg.TrangThaiMuon=0;
+	dg.SoSachMuon=0;
 	Insert_Node(root,dg.MaThe,dg);
+	cout<<dg.MaThe<<" \t"<<dg.Ho<<"\t"<<dg.Ten<<"\t"<<dg.GioiTinh<<endl;
 	cout<<"Da Them Doc Gia Thanh Cong."<<endl;
 	}
+}
 }
 void XoaTheDocGia()
 {
@@ -450,9 +472,9 @@ void Top10SachMuonNhieuNhat()
 {
 	
 }
-void LuuCSDL(NODEPTR &root , ofstream &FileDocGia)
+void LuuCSDL(NODEPTR &root , fstream &FileDocGia)
 {
-		FileDocGia.open("FileDocGia.txt");
+		FileDocGia.open("C:/Users/Manh/Google Drive/CSDL&Gt/Thuvien/FileDocGia.txt");
 	if(!FileDocGia)
 	{
 		cout<<"Khong the mo file"<<endl;
@@ -468,16 +490,16 @@ void LuuCSDL(NODEPTR &root , ofstream &FileDocGia)
 			FileDocGia<<p->docgia.MaThe<<endl;
 			FileDocGia<<p->docgia.Ho<<endl;
 			FileDocGia<<p->docgia.Ten<<endl;
-			
-			
-			if(p->right!=NULL)
-				Stack[++sp]=p->right;
-			if(p->left!=NULL)
-				p=p->left;
-			//else if(sp == -1)break;
-		//	else p=Stack[sp--];
-	}
+		}
+	if (FileDocGia.fail())
+{
+	cout << "Luu file that bai !" <<endl;
+	
+}
+	else
+	  {
 		cout<<"Da luu thanh cong"<<endl;
+		}
 		FileDocGia.close();
 }
 void Menu(int i, bool lightbar)
