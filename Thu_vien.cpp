@@ -88,11 +88,11 @@ void NhapTheDocGia(int &NhapMaThe);
 void Initialize(NODEPTR &root);
 void Insert_Node(NODEPTR &p,int x, DocGia a);
 void LNR(NODEPTR &root);
-void ThemTheDocGia(NODEPTR &root, int &n);
+void ThemTheDocGia(NODEPTR &root);
 void XoaTheDocGia();
 void SuaTheDocGia();
 int TrangThaiThe();
-bool ktra_So(int &num);
+bool Check(char *ch);
 void InDanhSachDocGia();
 
 void NhapThongTinDauSach();
@@ -111,11 +111,11 @@ void GiaoDien(int luachon);
 
 int main()
 {
-	int luachon=1,n;
+//	int luachon=1;
 	NODEPTR root;
-	fstream FileDocGia;
-	ThemTheDocGia(root,n);
-	LuuCSDL(root, FileDocGia);
+//	fstream FileDocGia;
+	ThemTheDocGia(root);
+//	LuuCSDL(root, FileDocGia);
 //	GiaoDien(luachon);
 	return 0;
 }
@@ -345,7 +345,7 @@ void LNR(NODEPTR &root)
 }
 
 //Ket thuc
-void ThemTheDocGia(NODEPTR &root, int &n)
+void ThemTheDocGia(NODEPTR &root)
 {
 	DocGia dg;
 	int count =0;
@@ -353,72 +353,78 @@ void ThemTheDocGia(NODEPTR &root, int &n)
 	 //So doc gia ban muon nhap
 	char temp[MAX];
 	int num=0;
-	int ktra;
-	string s1="Nam";
-	string s2="Nu";
-	for(int i=0;i<num;i++)
-	{
-	do
-	{
-		cout<<"Ban muon them bao nhieu doc gia : ";
-		cin>>temp;
-	}while(!Check(temp));
-	num=atoi(temp);
-	for(int i=0;i<n;i++)
-	{
-		count+=1;
-		dg.MaThe=count;
-		cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
 		do
 		{
-			cout<<"Moi Nhap Ho Doc Gia : ";
-			fflush(stdin); //dùng de xoá bo nho dêm
-			getline(cin,ho);
-		if(ho == "")
+			cout<<"Ban muon them bao nhieu doc gia : ";
+			cin>>temp;
+		}while(!Check(temp));
+		num=atoi(temp);
+		for(int i=0;i<num;i++)
+		{
+			count+=1;
+			dg.MaThe=count;
+			cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
+			do
 			{
-				cout<<"Nhap Ho Khong Hop Le . Moi Nhap Lai.\n";
-				cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
-			}
-		else
-		break;
-	}while(ho=="");
+				cout<<"Moi Nhap Ho Doc Gia : ";
+				fflush(stdin); //dùng de xoá bo nho dêm
+				getline(cin,ho);
+				if(ho == "")
+				{
+					cout<<"Nhap Ho Khong Hop Le . Moi Nhap Lai.\n";
+					cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
+				}
+				else
+				break;
+			}while(ho=="");
 	if(SoSanhChuoi(ho,"thoat")==true)
 	return;
 	else if(SoSanhChuoi(ho,"thoat")==false)
 	dg.Ho=ChuanHoaChuoi(ho);
-	do
-		{
-		cout<<"Moi Nhap Ten Doc Gia : ";
-		fflush(stdin); //dùng de xoá bo nho dêm
-		getline(cin,ten);
-		if(ten == "")
+			do
 			{
-				cout<<"Nhap Ten Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
-				cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
-				cout<<"Ho Doc Gia : "<<ho<<endl;
-			}
-			else
-			break;
-		}while(ten=="");
+				cout<<"Moi Nhap Ten Doc Gia : ";
+				fflush(stdin); //dùng de xoá bo nho dêm
+				getline(cin,ten);
+				if(ten == "")
+				{
+					cout<<"Nhap Ten Khong Hop Le . "<<endl<<"Moi Nhap Lai.";
+					cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
+					cout<<"Ho Doc Gia : "<<ho<<endl;
+				}
+				else
+				break;
+			}while(ten=="");
 		if(SoSanhChuoi(ten,"thoat")==true)
 		return;
 		else if(SoSanhChuoi(ten,"thoat")==false)	
 		dg.Ten=ChuanHoaChuoi(ten);
-		cout<<"Moi Nhap Gioi Tinh Doc Gia : ";
-		fflush(stdin); //dùng de xoá bo nho dêm
-		getline(cin,ten);
+			do
+			{
+				cout<<"Moi Nhap Gioi Tinh Doc Gia : ";
+				fflush(stdin); //dùng de xoá bo nho dêm
+				getline(cin,gt);
+			if(SoSanhChuoi(gt,"Nam")==true||SoSanhChuoi(gt,"Nu")==true)
+			break;
+			else
+				{
+					cout<<"Nhap Gioi Tinh Khong Hop Le . Moi Nhap Lai.\n";
+					cout<<"Ma The Doc Gia : "<<dg.MaThe<<endl;
+					cout<<"Ho Doc Gia : "<<dg.Ho<<endl;
+					cout<<"Ten Doc Gia : "<<dg.Ten<<endl;
+				}
+			}while(gt=="" || SoSanhChuoi(gt,"NAM")==false || SoSanhChuoi(gt,"NU")==false);
 		if(SoSanhChuoi(gt,"thoat")==true)
 		return;
 		else if(SoSanhChuoi(gt,"thoat")==false)	
 	dg.GioiTinh=ChuanHoaChuoi(gt);
-	dg.dsMuonTra = NULL;
-	dg.TrangThaiThe =1;
-	dg.SoSachMuon=0;
-	Insert_Node(root,dg.MaThe,dg);
+//	dg.dsMuonTra = NULL;
+	//dg.TrangThaiThe =1;
+	//dg.SoSachMuon=0;
+	//Insert_Node(root,dg.MaThe,dg);
 	cout<<dg.MaThe<<" \t"<<dg.Ho<<"\t"<<dg.Ten<<"\t"<<dg.GioiTinh<<endl;
 	cout<<"Da Them Doc Gia Thanh Cong."<<endl;
 	}
-}
 }
 void XoaTheDocGia()
 {
