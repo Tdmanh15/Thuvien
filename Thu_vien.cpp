@@ -94,7 +94,7 @@ void SuaTheDocGia();
 int TrangThaiThe();
 bool Check(char *ch);
 void InDanhSachDocGia();
-
+void HamBatPhim(int luachon);
 void NhapThongTinDauSach();
 
 void InThongTinDauSach();
@@ -111,12 +111,13 @@ void GiaoDien(int luachon);
 
 int main()
 {
-//	int luachon=1;
 	NODEPTR root;
+	int luachon=1;
 //	fstream FileDocGia;
-	ThemTheDocGia(root);
+//	ThemTheDocGia(root);
 //	LuuCSDL(root, FileDocGia);
-//	GiaoDien(luachon);
+	HamBatPhim(luachon);
+
 	return 0;
 }
 
@@ -129,7 +130,7 @@ void gotoxy(int x, int y)
     COORD c = {x,y};
     SetConsoleCursorPosition(h,c);
 }
-int wherex( void )
+int wherex( void )// tra ve vi tri con tro tai x
 {
     HANDLE hConsoleOutput;
     hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -137,7 +138,7 @@ int wherex( void )
     GetConsoleScreenBufferInfo(hConsoleOutput, &screen_buffer_info);
     return screen_buffer_info.dwCursorPosition.X;
 }
-int wherey( void )
+int wherey( void )//tra ve vi tri con tro tai y
 {
     HANDLE hConsoleOutput;
     hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -145,7 +146,8 @@ int wherey( void )
     GetConsoleScreenBufferInfo(hConsoleOutput, &screen_buffer_info);
     return screen_buffer_info.dwCursorPosition.Y;
 }
-void SetColor(WORD color)
+
+void SetColor(WORD color)// chon mau cho chu
 {
     HANDLE hConsoleOutput;
     hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -157,7 +159,8 @@ void SetColor(WORD color)
     wAttributes |= color;
     SetConsoleTextAttribute(hConsoleOutput, wAttributes);
 }
-void SetBGColor(WORD color)
+
+void SetBGColor(WORD color)// chon mau nen
 {
     HANDLE hConsoleOutput;
     hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -172,30 +175,34 @@ void SetBGColor(WORD color)
     wAttributes |= color;
     SetConsoleTextAttribute(hConsoleOutput, wAttributes);
 }
-void hidecursor()
+void hidecursor()// an con tro
 {
 	CONSOLE_CURSOR_INFO CursorInfo;
 	CursorInfo.dwSize = 30;
 	CursorInfo.bVisible = false;
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);
 }
-void unhidecursor(){
+void unhidecursor()//hien con tro
+{
 	CONSOLE_CURSOR_INFO CursorInfo;
 	CursorInfo.dwSize = 30;
 	CursorInfo.bVisible = true;
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);
 }
-void Inxy(int x, int y, string z, bool lightbar){
+void Inxy(int x, int y, string z, bool lightbar)
+{
 	gotoxy(x,y);
-	if(lightbar){
-		SetColor(0);
+	if(lightbar)
+	{
+		SetColor(20);
 		SetBGColor(15);
 	}
-	cout<<z<<string(48-z.length(),' ');
+	cout<<z;
 	SetColor(15);
-	SetBGColor(0);	
+	SetBGColor(20);	
 }
-void Inxy(int x, int y, string z){
+void Xuatxy(int x, int y, string z)
+{
 	gotoxy(x,y);
 	cout<<z;	
 }
@@ -514,38 +521,92 @@ void Menu(int i, bool lightbar)
 	switch (i)
 	{
 		case 1:
-			Inxy(28,2,"1. NHAP THE DOC GIA",lightbar);
+			Inxy(30,2,"1. NHAP THE DOC GIA",lightbar);
 			break;
 		case 2:
-			Inxy(28,3,"2. IN DANH SACH DOC GIA",lightbar);
-			break;
+			Inxy(29,3,"2. IN DANH SACH DOC GIA",lightbar);break;
 		case 3:
-			Inxy(28,4,"3. NHAP THONG TIN DAU SACH",lightbar);
-			break;
+			Inxy(28,4,"3. NHAP THONG TIN DAU SACH",lightbar);break;
 		case 4:
-			Inxy(28,5,"4. IN DANH SACH DAU SACH",lightbar);
-			break;
+			Inxy(29,5,"4. IN DANH SACH DAU SACH",lightbar);break;
 		case 5:
-			Inxy(28,6,"5. TIM SACH",lightbar);
-			break;
+			Inxy(31,6,"5. TIM SACH",lightbar);break;
 		case 6:
-			Inxy(28,8,"6. MUON SACH",lightbar);
-			break;
+			Inxy(31,7,"6. MUON SACH",lightbar);break;
 		case 7:
-			Inxy(28,9,"7. TRA SACH",lightbar);
-			break;
+			Inxy(31,8,"7. TRA SACH",lightbar);break;
 		case 8:
-			Inxy(20,10," Thoat",lightbar);
+			Inxy(33,9," Thoat",lightbar);
 	}
 }
 void GiaoDien(int luachon)
 {
 	system("cls");
-	Inxy(32,0,"QUAN LY THU VIEN");
+	Xuatxy(32,0,"QUAN LY THU VIEN");
 	for(int i=1;i<=8;i++)
 	{
 		Menu(i,false);
 	}
 		Menu(luachon,true);
 }
-
+void Exit(int i, bool lightbar){
+	switch (i){
+		case 1:
+			Inxy(2,2,"Co",lightbar);break;
+		case 2:
+			Inxy(2,4,"Khong",lightbar);break;
+	}
+}
+void GiaoDienExit(int luachon)
+{
+	system("cls");
+	for(int i=1;i<=2;i++)
+	{
+		Exit(i,false);
+	}
+	Exit(luachon,true);
+}
+void DieuKhienPhim(int luachon,char key)
+{
+while(1)
+{
+	if(kbhit())
+	{
+		key=getch();
+		switch(key)
+		{
+			case 80:
+				Menu(luachon,false);
+				if(luachon==8)
+				  luachon=1;
+				else
+				 luachon++;
+				Menu(luachon,true);
+				break;
+			case 72:
+				Menu(luachon,false);
+				if(luachon==1)
+				  luachon=8;
+				else
+				 luachon--;
+				Menu(luachon,true);
+				break;
+		}
+	}
+}	
+}
+void ESC(int x,char key)
+{
+	while(1)
+{
+	if(kbhit())
+	{
+		key=getch();
+		switch(key)
+		{
+			case 27:
+				if(x==27)
+				break;
+		}
+	}
+}
